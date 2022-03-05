@@ -43,6 +43,16 @@ public class Movie {
     public Movie() {
     }
 
+    public Movie(long id, String title, String genre, Date releaseYear, String director, URL picture, URL trailer) {
+        this.id = id;
+        this.title = title;
+        this.genre = genre;
+        this.releaseYear = releaseYear;
+        this.director = director;
+        this.picture = picture;
+        this.trailer = trailer;
+    }
+
     public Movie(long id, String title, String genre, Date releaseYear, String director, URL picture, URL trailer, Franchise franchise, Set<Character> characters) {
         this.id = id;
         this.title = title;

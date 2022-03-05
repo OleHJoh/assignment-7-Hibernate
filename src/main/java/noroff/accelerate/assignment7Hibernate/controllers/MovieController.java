@@ -1,6 +1,10 @@
 package noroff.accelerate.assignment7Hibernate.controllers;
 
+import noroff.accelerate.assignment7Hibernate.models.Character;
+import noroff.accelerate.assignment7Hibernate.models.Franchise;
 import noroff.accelerate.assignment7Hibernate.models.Movie;
+import noroff.accelerate.assignment7Hibernate.repositories.CharacterRepository;
+import noroff.accelerate.assignment7Hibernate.repositories.FranchiseRepository;
 import noroff.accelerate.assignment7Hibernate.repositories.MovieRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +16,13 @@ import java.util.List;
 @RequestMapping("api/v1/movie")
 public class MovieController {
     private MovieRepository movieRepository;
+    private CharacterRepository characterRepository;
+    private FranchiseRepository franchiseRepository;
 
-    public MovieController(MovieRepository movieRepository) {
+    public MovieController(MovieRepository movieRepository, CharacterRepository characterRepository, FranchiseRepository franchiseRepository) {
         this.movieRepository = movieRepository;
+        this.characterRepository = characterRepository;
+        this.franchiseRepository = franchiseRepository;
     }
 
     @GetMapping
@@ -25,5 +33,21 @@ public class MovieController {
     @PostMapping
     public ResponseEntity<Movie> addMovie(@RequestBody Movie movie) {
         return new ResponseEntity<>(movieRepository.save(movie), HttpStatus.CREATED);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<Movie> getMovieById(@PathVariable Long id) {
+        return new ResponseEntity<>(movieRepository.findById(id).get(), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/characters")
+    public ResponseEntity<List<Character>> getMovieCharacters(@PathVariable Long id) {
+        List<Long> ids = movieRepository.findById(id).get().getCharacters();
+        return new ResponseEntity<List<Character>>(characterRepository.findAllById(ids), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/franchise")
+    public ResponseEntity<Franchise> getMovieFranchise(@PathVariable Long id) {
+        return new ResponseEntity<>(franchiseRepository.findById(movieRepository.findById(id).get().getFranchise()).get(), HttpStatus.OK);
     }
 }
