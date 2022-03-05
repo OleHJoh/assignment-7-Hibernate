@@ -1,15 +1,20 @@
 package noroff.accelerate.assignment7Hibernate.models;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Character {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     private String fullName;
     @Nullable
@@ -69,5 +74,16 @@ public class Character {
 
     public void setPicture(URL picture) {
         this.picture = picture;
+    }
+
+    @JsonGetter("movies")
+    public List<Long> getMovies() {
+        if (movies == null)
+            return null;
+        return movies.stream().map(m -> m.getId()).collect(Collectors.toList());
+    }
+
+    public void setMovies(Set<Movie> movies) {
+        this.movies = movies;
     }
 }

@@ -1,14 +1,20 @@
 package noroff.accelerate.assignment7Hibernate.models;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     private String title;
     private String genre;
@@ -94,5 +100,27 @@ public class Movie {
 
     public void setTrailer(URL trailer) {
         this.trailer = trailer;
+    }
+
+    @JsonGetter("franchise")
+    public Long getFranchise() {
+        if (franchise == null)
+            return null;
+        return franchise.getId();
+    }
+
+    public void setFranchise(Franchise franchise) {
+        this.franchise = franchise;
+    }
+
+    @JsonGetter("characters")
+    public List<Long> getCharacters() {
+        if (characters == null)
+            return null;
+        return characters.stream().map(c -> c.getId()).collect(Collectors.toList());
+    }
+
+    public void setCharacters(Set<Character> characters) {
+        this.characters = characters;
     }
 }
