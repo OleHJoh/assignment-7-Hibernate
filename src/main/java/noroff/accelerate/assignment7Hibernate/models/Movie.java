@@ -2,8 +2,11 @@ package noroff.accelerate.assignment7Hibernate.models;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -16,8 +19,12 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
+    @NotBlank
+    @Size(min = 0, max = 60)
     private String title;
+    @NotBlank
     private String genre;
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date releaseYear;
     private String director;
     private URL picture;
@@ -36,7 +43,7 @@ public class Movie {
     public Movie() {
     }
 
-    public Movie(long id, String title, String genre, Date releaseYear, String director, URL picture, URL trailer) {
+    public Movie(long id, String title, String genre, Date releaseYear, String director, URL picture, URL trailer, Franchise franchise, Set<Character> characters) {
         this.id = id;
         this.title = title;
         this.genre = genre;
@@ -44,6 +51,8 @@ public class Movie {
         this.director = director;
         this.picture = picture;
         this.trailer = trailer;
+        this.franchise = franchise;
+        this.characters = characters;
     }
 
     public long getId() {

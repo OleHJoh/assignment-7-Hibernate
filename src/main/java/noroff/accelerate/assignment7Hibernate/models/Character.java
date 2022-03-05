@@ -2,9 +2,10 @@ package noroff.accelerate.assignment7Hibernate.models;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
@@ -16,8 +17,9 @@ public class Character {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
+    @NotBlank
+    @Size(min = 0, max = 40)
     private String fullName;
-    @Nullable
     private String alias;
     private String gender;
     private URL picture;
@@ -28,12 +30,13 @@ public class Character {
     public Character() {
     }
 
-    public Character(long id, String fullName, String alias, String gender, URL picture) {
+    public Character(long id, String fullName, String alias, String gender, URL picture, Set<Movie> movies) {
         this.id = id;
         this.fullName = fullName;
         this.alias = alias;
         this.gender = gender;
         this.picture = picture;
+        this.movies = movies;
     }
 
     public long getId() {

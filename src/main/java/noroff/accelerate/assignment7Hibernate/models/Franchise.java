@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +15,10 @@ public class Franchise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
+    @NotBlank
+    @Size(min = 0, max = 20)
     private String name;
+    @NotBlank
     private String description;
     //Relationships
     @OneToMany(mappedBy = "franchise")
@@ -22,10 +27,11 @@ public class Franchise {
     public Franchise() {
     }
 
-    public Franchise(long id, String name, String description) {
+    public Franchise(long id, String name, String description, List<Movie> movies) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.movies = movies;
     }
 
     public long getId() {
