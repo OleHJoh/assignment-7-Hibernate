@@ -74,7 +74,7 @@ public class FranchiseController {
         return new ResponseEntity<>(characterRepository.findAllById(ids2), HttpStatus.OK);
     }
 
-    @PutMapping("{id}/movies")
+    @PatchMapping("{id}/movies")
     public ResponseEntity<Franchise> updateFranchiseMovies(@PathVariable Long id, @RequestBody List<Long> moviesIds){
         List<Movie> movies = (movieRepository.findAllById(moviesIds));
         Franchise franchise = franchiseRepository.getById(id);

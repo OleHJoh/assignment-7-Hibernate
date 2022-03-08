@@ -62,7 +62,7 @@ public class MovieController {
         return new ResponseEntity<>(franchiseRepository.getById(franchiseId), HttpStatus.OK);
     }
 
-    @PutMapping("{id}/characters")
+    @PatchMapping("{id}/characters")
     public ResponseEntity<Movie> updateMovieCharacters(@PathVariable Long id, @RequestBody List<Long> ids){
         Set<Character> characters = new HashSet<>(characterRepository.findAllById(ids));
         Movie movie = movieRepository.getById(id);

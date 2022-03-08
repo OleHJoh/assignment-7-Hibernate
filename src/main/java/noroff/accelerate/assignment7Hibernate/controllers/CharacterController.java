@@ -56,7 +56,7 @@ public class CharacterController {
         return new ResponseEntity<>(movieRepository.findAllById(ids), HttpStatus.OK);
     }
 
-    @PutMapping("{id}")
+    @PatchMapping("{id}")
     public ResponseEntity<Character> updateCharacter(@PathVariable Long id, @RequestBody Character character){
         Set<Movie> movies = new HashSet<>(movieRepository.findAllById(character.getMovies()));
         character.setMovies(movies);
