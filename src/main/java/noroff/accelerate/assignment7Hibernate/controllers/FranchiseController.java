@@ -38,10 +38,12 @@ public class FranchiseController {
     @PostMapping
     public ResponseEntity<Franchise> addFranchise(@RequestBody Franchise franchise) {
         franchiseRepository.save(franchise);
-        List<Movie> movies = movieRepository.findAllById(franchise.getMovies());
-        for (Movie movie: movies) {
-            movie.setFranchise(franchise);
-            movieRepository.save(movie);
+        if (franchise.getMovies() != null) {
+            List<Movie> movies = movieRepository.findAllById(franchise.getMovies());
+            for (Movie movie : movies) {
+                movie.setFranchise(franchise);
+                movieRepository.save(movie);
+            }
         }
         return new ResponseEntity<>(franchiseRepository.getById(franchise.getId()), HttpStatus.CREATED);
     }

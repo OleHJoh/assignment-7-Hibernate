@@ -30,15 +30,17 @@ public class CharacterController {
 
     @PostMapping
     public ResponseEntity<Character> addCharacter(@RequestBody Character character) {
-        Set<Movie> movies = new HashSet<>(movieRepository.findAllById(character.getMovies()));
-        character.setMovies(movies);
         characterRepository.save(character);
-        for (Movie movie: movies) {
-            List<Long> ids = movieRepository.getById(movie.getId()).getCharacters();
-            Set<Character> characters = new HashSet<>(characterRepository.findAllById(ids));
-            characters.add(character);
-            movie.setCharacters(characters);
-            movieRepository.save(movie);
+        if (character.getMovies() != null) {
+            Set<Movie> movies = new HashSet<>(movieRepository.findAllById(character.getMovies()));
+            character.setMovies(movies);
+            for (Movie movie : movies) {
+                List<Long> ids = movieRepository.getById(movie.getId()).getCharacters();
+                Set<Character> characters = new HashSet<>(characterRepository.findAllById(ids));
+                characters.add(character);
+                movie.setCharacters(characters);
+                movieRepository.save(movie);
+            }
         }
         return new ResponseEntity<>(characterRepository.getById(character.getId()), HttpStatus.CREATED);
     }
