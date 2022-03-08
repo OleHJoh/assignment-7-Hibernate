@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 public class Franchise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     @NotBlank
     @Size(min = 0, max = 20)

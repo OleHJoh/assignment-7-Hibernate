@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/v1/character")
@@ -28,17 +30,42 @@ public class CharacterController {
 
     @PostMapping
     public ResponseEntity<Character> addCharacter(@RequestBody Character character) {
-        return new ResponseEntity<>(characterRepository.save(character), HttpStatus.CREATED);
+        Set<Movie> movies = new HashSet<>(movieRepository.findAllById(character.getMovies()));
+        character.setMovies(movies);
+        characterRepository.save(character);
+        for (Movie movie: movies) {
+            List<Long> ids = movieRepository.getById(movie.getId()).getCharacters();
+            Set<Character> characters = new HashSet<>(characterRepository.findAllById(ids));
+            characters.add(character);
+            movie.setCharacters(characters);
+            movieRepository.save(movie);
+        }
+        return new ResponseEntity<>(characterRepository.getById(character.getId()), HttpStatus.CREATED);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<Character> getCharacterById(@PathVariable Long id) {
-        return new ResponseEntity<>(characterRepository.findById(id).get(), HttpStatus.OK);
+        return new ResponseEntity<>(characterRepository.getById(id), HttpStatus.OK);
     }
 
     @GetMapping("{id}/movies")
     public ResponseEntity<List<Movie>> getCharacterMovies(@PathVariable Long id) {
-        List<Long> ids = characterRepository.findById(id).get().getMovies();
+        List<Long> ids = characterRepository.getById(id).getMovies();
         return new ResponseEntity<>(movieRepository.findAllById(ids), HttpStatus.OK);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Character> updateCharacter(@PathVariable Long id, @RequestBody Character character){
+        Set<Movie> movies = new HashSet<>(movieRepository.findAllById(character.getMovies()));
+        character.setMovies(movies);
+        characterRepository.save(character);
+        for (Movie movie: movies) {
+            List<Long> ids = movieRepository.getById(movie.getId()).getCharacters();
+            Set<Character> characters = new HashSet<>(characterRepository.findAllById(ids));
+            characters.add(character);
+            movie.setCharacters(characters);
+            movieRepository.save(movie);
+        }
+        return new ResponseEntity<>(characterRepository.getById(character.getId()), HttpStatus.OK);
     }
 }

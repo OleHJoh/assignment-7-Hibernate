@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     @NotBlank
     @Size(min = 0, max = 60)
@@ -31,7 +30,7 @@ public class Movie {
     private URL picture;
     private URL trailer;
     //Relationships
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @ManyToOne
     private Franchise franchise;
     @ManyToMany
     @JoinTable(

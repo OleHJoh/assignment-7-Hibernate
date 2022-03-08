@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,8 +34,14 @@ public class MovieController {
 
     @PostMapping
     public ResponseEntity<Movie> addMovie(@RequestBody Movie movie) {
-        Franchise franchise = franchiseRepository.findById(movie.getFranchise()).get();
-        movie.setFranchise(franchise);
+        if (movie.getFranchise() != null) {
+            Franchise franchise = franchiseRepository.findById(movie.getFranchise()).get();
+            movie.setFranchise(franchise);
+        }
+        if (movie.getCharacters() != null) {
+            Set<Character> characters = new HashSet<>(characterRepository.findAllById(movie.getCharacters()));
+            movie.setCharacters(characters);
+        }
         return new ResponseEntity<>(movieRepository.save(movie), HttpStatus.CREATED);
     }
 
@@ -51,14 +58,15 @@ public class MovieController {
 
     @GetMapping("{id}/franchise")
     public ResponseEntity<Franchise> getMovieFranchise(@PathVariable Long id) {
-        return new ResponseEntity<>(franchiseRepository.findById(movieRepository.findById(id).get().getFranchise()).get(), HttpStatus.OK);
+        Long franchiseId = movieRepository.getById(id).getFranchise();
+        return new ResponseEntity<>(franchiseRepository.getById(franchiseId), HttpStatus.OK);
     }
 
     @PutMapping("{id}/characters")
-    public ResponseEntity<List<Character>> updateMovieCharacters(@PathVariable Long id, @RequestBody List<Long> ids){;
-        Set<Character> characters = (Set<Character>) characterRepository.findAllById(ids);
-        movieRepository.findById(id).get().setCharacters(characters);
-        List<Long> ids2 = movieRepository.findById(id).get().getCharacters();
-        return new ResponseEntity<>(characterRepository.findAllById(ids), HttpStatus.OK);
+    public ResponseEntity<Movie> updateMovieCharacters(@PathVariable Long id, @RequestBody List<Long> ids){
+        Set<Character> characters = new HashSet<>(characterRepository.findAllById(ids));
+        Movie movie = movieRepository.getById(id);
+        movie.setCharacters(characters);
+        return new ResponseEntity<>(movieRepository.save(movie), HttpStatus.OK);
     }
 }
