@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/v1/movie")
@@ -32,6 +33,8 @@ public class MovieController {
 
     @PostMapping
     public ResponseEntity<Movie> addMovie(@RequestBody Movie movie) {
+        Franchise franchise = franchiseRepository.findById(movie.getFranchise()).get();
+        movie.setFranchise(franchise);
         return new ResponseEntity<>(movieRepository.save(movie), HttpStatus.CREATED);
     }
 
@@ -43,11 +46,19 @@ public class MovieController {
     @GetMapping("{id}/characters")
     public ResponseEntity<List<Character>> getMovieCharacters(@PathVariable Long id) {
         List<Long> ids = movieRepository.findById(id).get().getCharacters();
-        return new ResponseEntity<List<Character>>(characterRepository.findAllById(ids), HttpStatus.OK);
+        return new ResponseEntity<>(characterRepository.findAllById(ids), HttpStatus.OK);
     }
 
     @GetMapping("{id}/franchise")
     public ResponseEntity<Franchise> getMovieFranchise(@PathVariable Long id) {
         return new ResponseEntity<>(franchiseRepository.findById(movieRepository.findById(id).get().getFranchise()).get(), HttpStatus.OK);
+    }
+
+    @PutMapping("{id}/characters")
+    public ResponseEntity<List<Character>> updateMovieCharacters(@PathVariable Long id, @RequestBody List<Long> ids){;
+        Set<Character> characters = (Set<Character>) characterRepository.findAllById(ids);
+        movieRepository.findById(id).get().setCharacters(characters);
+        List<Long> ids2 = movieRepository.findById(id).get().getCharacters();
+        return new ResponseEntity<>(characterRepository.findAllById(ids), HttpStatus.OK);
     }
 }

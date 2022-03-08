@@ -1,7 +1,9 @@
 package noroff.accelerate.assignment7Hibernate.controllers;
 
+import noroff.accelerate.assignment7Hibernate.models.Character;
 import noroff.accelerate.assignment7Hibernate.models.Franchise;
 import noroff.accelerate.assignment7Hibernate.models.Movie;
+import noroff.accelerate.assignment7Hibernate.repositories.CharacterRepository;
 import noroff.accelerate.assignment7Hibernate.repositories.FranchiseRepository;
 import noroff.accelerate.assignment7Hibernate.repositories.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -16,10 +19,12 @@ import java.util.List;
 public class FranchiseController {
     private FranchiseRepository franchiseRepository;
     private MovieRepository movieRepository;
+    private CharacterRepository characterRepository;
 
-    public FranchiseController(FranchiseRepository franchiseRepository, MovieRepository movieRepository) {
+    public FranchiseController(FranchiseRepository franchiseRepository, MovieRepository movieRepository, CharacterRepository characterRepository) {
         this.franchiseRepository = franchiseRepository;
         this.movieRepository = movieRepository;
+        this.characterRepository = characterRepository;
     }
 
     @GetMapping
@@ -42,5 +47,20 @@ public class FranchiseController {
     public ResponseEntity<List<Movie>> getFranchiseMovies(@PathVariable Long id) {
         List<Long> ids = franchiseRepository.findById(id).get().getMovies();
         return new ResponseEntity<>(movieRepository.findAllById(ids), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/characters")
+    public ResponseEntity<List<Character>> getFranchiseCharacters(@PathVariable Long id) {
+        List<Long> ids = franchiseRepository.findById(id).get().getMovies();
+        List<Long> ids2 = new ArrayList<>();
+        for (Movie movie: movieRepository.findAllById(ids)) {
+            List<Long> characterIds = movie.getCharacters();
+            for (int i = 0; i < characterIds.size(); i++){
+                if (ids2.contains(characterIds.get(i)) == false){
+                    ids2.add(characterIds.get(i));
+                }
+            }
+        }
+        return new ResponseEntity<>(characterRepository.findAllById(ids2), HttpStatus.OK);
     }
 }

@@ -2,6 +2,7 @@ package noroff.accelerate.assignment7Hibernate.models;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -30,7 +31,7 @@ public class Movie {
     private URL picture;
     private URL trailer;
     //Relationships
-    @ManyToOne
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     private Franchise franchise;
     @ManyToMany
     @JoinTable(
